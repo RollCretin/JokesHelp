@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -36,6 +37,7 @@ import com.raizlabs.android.dbflow.sql.language.Select;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 import com.raizlabs.android.dbflow.structure.database.transaction.ProcessModelTransaction;
 import com.raizlabs.android.dbflow.structure.database.transaction.Transaction;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.tsy.sdk.myokhttp.response.GsonResponseHandler;
 
@@ -68,6 +70,8 @@ public class AddPicJokesActivity extends BaseActivity implements View.OnClickLis
 
     private List<JokeModel> list;
     private List<Boolean> listFlag;
+    //图片专用
+    private List<Boolean> listUseful;
     private ListAdapter adapter;
 
     //开始时间
@@ -102,6 +106,7 @@ public class AddPicJokesActivity extends BaseActivity implements View.OnClickLis
         recyclerview.addItemDecoration(new ItemButtomDecoration(this, 5));
         list = new ArrayList();
         listFlag = new ArrayList();
+        listUseful = new ArrayList();
         adapter = new ListAdapter(list);
         adapter.openLoadAnimation(BaseQuickAdapter.ALPHAIN);
         adapter.setNotDoAnimationCount(2);
@@ -206,6 +211,8 @@ public class AddPicJokesActivity extends BaseActivity implements View.OnClickLis
                             list.add(jokeModel);
                             listFlag.add(true);
                         }
+                        //给所有的图片添加不可用的标签
+                        listUseful.add(false);
                         //将数据添加进来 否则会重复
                         jokeModels.add(jokeModel);
                     }
@@ -218,6 +225,7 @@ public class AddPicJokesActivity extends BaseActivity implements View.OnClickLis
                 super.onPostExecute(aVoid);
                 if ( aVoid == -1 ) {
                     showToast("没有可以选择的用户，请先添加用户再操作");
+                    stopDialog();
                 } else if ( aVoid == 1 ) {
                     //拉取数据条数 15条 匹配失败条数 10条 可上传条数 5条
                     int errNum = 0;
@@ -232,14 +240,16 @@ public class AddPicJokesActivity extends BaseActivity implements View.OnClickLis
                             "条 匹配失败条数 " + errNum + "条 可上传条数 " + (list.size() - errNum) + "条");
 
                     mEt_page.setText((Integer.parseInt(mEt_page.getText().toString()) + 1) + "");
-
-                    adapter.notifyDataSetChanged();
+                    //数据进行校验
+                    checkData();
                 } else if ( aVoid == -2 ) {
                     showToast("开始时间和结束时间不能一样");
+                    stopDialog();
                 } else if ( aVoid == -3 ) {
                     showToast("截止日期不能比当前时间大");
+                    stopDialog();
                 }
-                stopDialog();
+
             }
         }.execute(response);
     }
@@ -281,6 +291,7 @@ public class AddPicJokesActivity extends BaseActivity implements View.OnClickLis
                 //清空数据
                 list.clear();
                 listFlag.clear();
+                listUseful.clear();
                 mTv_tips.setText("拉取数据条数 " + 0 +
                         "条 匹配失败条数 " + 0 + "条 可上传条数 " + 0 + "条");
                 adapter.notifyDataSetChanged();
@@ -299,15 +310,64 @@ public class AddPicJokesActivity extends BaseActivity implements View.OnClickLis
         }
     }
 
+    //检查数据
+    int checkNum = 0;
+    int checkNumAim = 0;
+
+    private void checkData() {
+        List<JokeModel> empList = new ArrayList<>();
+        checkNum = 0;
+        checkNumAim = 0;
+        for ( Boolean b :
+                listFlag ) {
+            if ( b ) {
+                checkNumAim++;
+            }
+        }
+
+        for ( int i = 0; i < list.size(); i++ ) {
+            //获取可以提交的数据
+            if ( listFlag.get(i) ) {
+                JokeModel jokeModel = list.get(i);
+                empList.add(jokeModel);
+                int finalI = i;
+                Picasso.with(this).load(jokeModel.getImageUrl()).tag(jokeModel.getImageUrl()).fetch(new Callback() {
+
+                    @Override
+                    public void onSuccess() {
+                        Log.e("HHHHHHHHH", "onSuccess " + finalI);
+                        listUseful.set(finalI, true);
+                        checkNum++;
+                        if ( checkNum == checkNumAim ) {
+                            adapter.notifyDataSetChanged();
+                            stopDialog();
+                        }
+                    }
+
+                    @Override
+                    public void onError() {
+                        Log.e("HHHHHHHHH", "onError " + finalI);
+                        checkNum++;
+                        if ( checkNum == checkNumAim ) {
+                            adapter.notifyDataSetChanged();
+                            stopDialog();
+                        }
+                    }
+                });
+            }
+        }
+    }
+
     //提交数据
     private void commit() {
         List<JokeModel> empList = new ArrayList<>();
         for ( int i = 0; i < list.size(); i++ ) {
             //获取可以提交的数据
-            if ( listFlag.get(i) ) {
+            if ( listFlag.get(i) && listUseful.get(i) ) {
                 empList.add(list.get(i));
             }
         }
+
         //如果数据不为空
         if ( !empList.isEmpty() ) {
             showDialog("正在提交...");
@@ -352,6 +412,7 @@ public class AddPicJokesActivity extends BaseActivity implements View.OnClickLis
                                         })
                                         .build()
                                         .execute();
+                                showToast("提交数据条数" + empList.size());
                             } else {
                                 showToast(response.getMessage());
                                 stopDialog();
@@ -466,6 +527,14 @@ public class AddPicJokesActivity extends BaseActivity implements View.OnClickLis
                 //不可用
                 helper.setText(R.id.tv_status, "此数据重复 不可用");
                 (( TextView ) helper.getView(R.id.tv_status)).setTextColor(Color.parseColor("#f44336"));
+            }
+
+            if ( listUseful.get(helper.getPosition()) ) {
+                helper.setText(R.id.tv_type, "图片路径有效");
+                (( TextView ) helper.getView(R.id.tv_type)).setTextColor(Color.parseColor("#6BAE36"));
+            } else {
+                helper.setText(R.id.tv_type, "图片路径无效");
+                (( TextView ) helper.getView(R.id.tv_type)).setTextColor(Color.parseColor("#f44336"));
             }
 
             helper.setText(R.id.richText, item.getContent());
