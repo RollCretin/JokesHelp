@@ -151,4 +151,28 @@
             android:textColor="@color/font_black1"
             android:textSize="@dimen/text_size_14"/>
     </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="#ffffff"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_04"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/item_bg_selector"
+            android:drawableRight="@mipmap/arrow_right"
+            android:gravity="center_vertical"
+            android:paddingBottom="16dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="10dp"
+            android:paddingTop="16dp"
+            android:text="开启添加段子自动点赞"
+            android:textColor="@color/font_black1"
+            android:textSize="@dimen/text_size_14"/>
+
+    </LinearLayout>
 </LinearLayout>

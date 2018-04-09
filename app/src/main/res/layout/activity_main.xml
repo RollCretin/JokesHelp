@@ -217,6 +217,20 @@
                 android:textSize="16sp"/>
 
             <TextView
+                android:id="@+id/tv_09"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/item_bg_selector_black_5"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="验证码查询"
+                android:textColor="#ffffff"
+                android:textSize="16sp"/>
+
+            <TextView
                 android:id="@+id/tv_07"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

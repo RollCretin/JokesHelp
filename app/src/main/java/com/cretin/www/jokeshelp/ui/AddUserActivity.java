@@ -29,6 +29,7 @@ public class AddUserActivity extends BaseActivity {
     public static final String TAG = "AddUserActivity";
     private EditText mEt_phone;
     private TextView mTv_add;
+    private TextView mTv_right;
     private android.support.v7.widget.RecyclerView recyclerview;
 
     private List list;
@@ -66,12 +67,17 @@ public class AddUserActivity extends BaseActivity {
     //获取数据
     private void getData() {
         //获取本地存储的可用的用户
-        List<UserModel> userList = new Select()
-                .from(UserModel.class)
-                .queryList();
-        if ( userList != null && !userList.isEmpty() ) {
-            list.addAll(userList);
-            adapter.notifyDataSetChanged();
+        try {
+            List<UserModel> userList = new Select()
+                    .from(UserModel.class)
+                    .queryList();
+            if ( userList != null && !userList.isEmpty() ) {
+                list.addAll(userList);
+                mTv_right.setText("用户：" + list.size() + "个");
+                adapter.notifyDataSetChanged();
+            }
+        } catch ( Exception e ) {
+
         }
     }
 
@@ -79,7 +85,8 @@ public class AddUserActivity extends BaseActivity {
         mEt_phone = ( EditText ) findViewById(R.id.et_phone);
         mTv_add = ( TextView ) findViewById(R.id.tv_add);
         recyclerview = ( android.support.v7.widget.RecyclerView ) findViewById(R.id.recyclerview);
-
+        mTv_right = ( TextView ) findViewById(R.id.tv_right);
+        mTv_right.setVisibility(View.VISIBLE);
         mTv_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -98,7 +105,7 @@ public class AddUserActivity extends BaseActivity {
         @Override
         protected void convert(final BaseViewHolder helper, final UserModel item) {
             if ( !TextUtils.isEmpty(item.getAvatar()) ) {
-                Picasso.with(AddUserActivity.this).load(URLConstant.BASE_URL + item.getAvatar())
+                Picasso.with(AddUserActivity.this).load(URLConstant.BASE_URL + "/" + item.getAvatar())
                         .into(( ImageView ) helper.getView(R.id.iv_avatar));
             } else {
                 (( ImageView ) helper.getView(R.id.iv_avatar)).setImageResource(R.mipmap.default_avatar_oval);
@@ -119,6 +126,7 @@ public class AddUserActivity extends BaseActivity {
                             if ( item.delete() ) {
                                 list.remove(item);
                             }
+                             mTv_right.setText("用户：" + list.size() + "个");
                             adapter.notifyDataSetChanged();
                         }
                     });
@@ -136,13 +144,17 @@ public class AddUserActivity extends BaseActivity {
             return;
         }
 
-        List<UserModel> userModels = new Select()
-                .from(UserModel.class)
-                .where(UserModel_Table.username.eq(phone))
-                .queryList();
-        if ( !userModels.isEmpty() ) {
-            showToast("该手机号已添加，请不要重复添加");
-            return;
+        try {
+            List<UserModel> userModels = new Select()
+                    .from(UserModel.class)
+                    .where(UserModel_Table.username.eq(phone))
+                    .queryList();
+            if ( !userModels.isEmpty() ) {
+                showToast("该手机号已添加，请不要重复添加");
+                return;
+            }
+        } catch ( Exception e ) {
+            e.printStackTrace();
         }
 
         showDialog("正在添加...");
@@ -181,6 +193,7 @@ public class AddUserActivity extends BaseActivity {
                                 showToast("添加成功");
                                 list.add(userModel);
                             }
+                            mTv_right.setText("用户：" + list.size() + "个");
                             adapter.notifyDataSetChanged();
                             mEt_phone.setText("");
                         } else {

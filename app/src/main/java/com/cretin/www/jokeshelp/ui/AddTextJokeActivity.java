@@ -30,6 +30,7 @@ import com.cretin.www.jokeshelp.utils.UUIDUtils;
 import com.cretin.www.jokeshelp.view.ItemButtomDecoration;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.orhanobut.hawk.Hawk;
 import com.raizlabs.android.dbflow.config.FlowManager;
 import com.raizlabs.android.dbflow.sql.language.Select;
 import com.raizlabs.android.dbflow.structure.BaseModel;
@@ -204,6 +205,8 @@ public class AddTextJokeActivity extends BaseActivity implements View.OnClickLis
                             list.add(jokeModel);
                             listFlag.add(true);
                         }
+                        //将数据添加进来 否则会重复
+                        jokeModels.add(jokeModel);
                     }
                 }
                 return 1;
@@ -307,6 +310,8 @@ public class AddTextJokeActivity extends BaseActivity implements View.OnClickLis
         if ( !empList.isEmpty() ) {
             showDialog("正在提交...");
             String url = URLConstant.BASE_URL + "/admin/betchInsert";
+            if ( Hawk.get("AUTO_LIKE", false) )
+                url = URLConstant.BASE_URL + "/admin/extra/betchInsert";
             if ( gson == null )
                 gson = new GsonBuilder()
                         .setDateFormat("yyyy-MM-dd HH:mm:ss")
@@ -436,7 +441,7 @@ public class AddTextJokeActivity extends BaseActivity implements View.OnClickLis
                             helper.setImageResource(R.id.iv_uservavtar, R.mipmap.default_avatar_oval);
                         } else {
                             Picasso.with(AddTextJokeActivity.this).
-                                    load(URLConstant.BASE_URL + userModel.getAvatar())
+                                    load(URLConstant.BASE_URL + "/" + userModel.getAvatar())
                                     .into(( ImageView ) helper.getView(R.id.iv_uservavtar));
                         }
 

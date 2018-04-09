@@ -48,6 +48,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private TextView mTv_06;
     private TextView mTv_07;
     private TextView mTv_08;
+    private TextView mTv_09;
     private TextView tv_compare_tips;
     private TextView tv_tongbu_tips;
     private TextView tv_curr_user;
@@ -114,6 +115,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mTv_06 = ( TextView ) findViewById(R.id.tv_06);
         mTv_07 = ( TextView ) findViewById(R.id.tv_07);
         mTv_08 = ( TextView ) findViewById(R.id.tv_08);
+        mTv_09 = ( TextView ) findViewById(R.id.tv_09);
         tv_compare_tips = ( TextView ) findViewById(R.id.tv_compare_tips);
         tv_tongbu_tips = ( TextView ) findViewById(R.id.tv_tongbu_tips);
         tv_curr_user = ( TextView ) findViewById(R.id.tv_curr_user);
@@ -126,6 +128,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mTv_06.setOnClickListener(this);
         mTv_07.setOnClickListener(this);
         mTv_08.setOnClickListener(this);
+        mTv_09.setOnClickListener(this);
     }
 
     @Override
@@ -171,6 +174,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             case R.id.tv_06:
                 //用户管理
                 startActivity(new Intent(this, AddUserActivity.class));
+                break;
+            case R.id.tv_09:
+                //验证码查询
+                startActivity(new Intent(this, VerificationCodeActivity.class));
                 break;
             case R.id.tv_07:
                 //设置

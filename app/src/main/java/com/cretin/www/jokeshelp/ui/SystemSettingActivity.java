@@ -7,6 +7,7 @@ import com.cretin.www.jokeshelp.R;
 import com.cretin.www.jokeshelp.db.JokeModel;
 import com.cretin.www.jokeshelp.db.UserModel;
 import com.cretin.www.jokeshelp.model.event.NotifyUpdate;
+import com.orhanobut.hawk.Hawk;
 import com.raizlabs.android.dbflow.sql.language.SQLite;
 
 import org.greenrobot.eventbus.EventBus;
@@ -16,6 +17,7 @@ public class SystemSettingActivity extends BaseActivity {
     private TextView tv_01;
     private TextView tv_02;
     private TextView tv_03;
+    private TextView tv_04;
 
     @Override
     public int getLayoutId() {
@@ -29,6 +31,13 @@ public class SystemSettingActivity extends BaseActivity {
         tv_01 = ( TextView ) findViewById(R.id.tv_01);
         tv_02 = ( TextView ) findViewById(R.id.tv_02);
         tv_03 = ( TextView ) findViewById(R.id.tv_03);
+        tv_04 = ( TextView ) findViewById(R.id.tv_04);
+
+        if ( Hawk.get("AUTO_LIKE", false) ) {
+            tv_04.setText("关闭添加段子自动点赞");
+        } else {
+            tv_04.setText("开启添加段子自动点赞");
+        }
 
         tv_01.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -57,6 +66,19 @@ public class SystemSettingActivity extends BaseActivity {
                 //清除本地所有数据
                 clearAllData();
                 EventBus.getDefault().post(new NotifyUpdate());
+            }
+        });
+
+        tv_04.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean flag = Hawk.get("AUTO_LIKE", false);
+                Hawk.put("AUTO_LIKE", !flag);
+                if ( !flag ) {
+                    tv_04.setText("关闭添加段子自动点赞");
+                } else {
+                    tv_04.setText("开启添加段子自动点赞");
+                }
             }
         });
     }

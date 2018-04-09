@@ -30,6 +30,8 @@
         </activity>
         <activity android:name=".ui.SystemSettingActivity">
         </activity>
+        <activity android:name=".ui.VerificationCodeActivity">
+        </activity>
     </application>
 
 </manifest>
