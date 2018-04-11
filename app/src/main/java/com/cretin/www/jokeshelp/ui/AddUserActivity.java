@@ -1,5 +1,7 @@
 package com.cretin.www.jokeshelp.ui;
 
+import android.content.Intent;
+import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.text.TextUtils;
 import android.view.View;
@@ -14,11 +16,15 @@ import com.cretin.www.jokeshelp.app.URLConstant;
 import com.cretin.www.jokeshelp.db.UserModel;
 import com.cretin.www.jokeshelp.db.UserModel_Table;
 import com.cretin.www.jokeshelp.model.UserResultModel;
+import com.cretin.www.jokeshelp.model.event.NotifyUpdateUser;
 import com.cretin.www.jokeshelp.utils.MyAlertDialog;
 import com.cretin.www.jokeshelp.view.ItemButtomDecoration;
 import com.raizlabs.android.dbflow.sql.language.Select;
 import com.squareup.picasso.Picasso;
 import com.tsy.sdk.myokhttp.response.GsonResponseHandler;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -72,6 +78,7 @@ public class AddUserActivity extends BaseActivity {
                     .from(UserModel.class)
                     .queryList();
             if ( userList != null && !userList.isEmpty() ) {
+                list.clear();
                 list.addAll(userList);
                 mTv_right.setText("用户：" + list.size() + "个");
                 adapter.notifyDataSetChanged();
@@ -79,6 +86,23 @@ public class AddUserActivity extends BaseActivity {
         } catch ( Exception e ) {
 
         }
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Subscribe
+    public void notifyUpdateUser(NotifyUpdateUser event){
+        getData();
     }
 
     private void bindViews() {
@@ -92,6 +116,14 @@ public class AddUserActivity extends BaseActivity {
             public void onClick(View v) {
                 //添加用户
                 addData();
+            }
+        });
+
+        mTv_right.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //进入下面的
+                startActivity(new Intent(AddUserActivity.this, AutoAddUserActicity.class));
             }
         });
     }
@@ -126,7 +158,7 @@ public class AddUserActivity extends BaseActivity {
                             if ( item.delete() ) {
                                 list.remove(item);
                             }
-                             mTv_right.setText("用户：" + list.size() + "个");
+                            mTv_right.setText("用户：" + list.size() + "个");
                             adapter.notifyDataSetChanged();
                         }
                     });
@@ -145,11 +177,11 @@ public class AddUserActivity extends BaseActivity {
         }
 
         try {
-            List<UserModel> userModels = new Select()
+            UserModel userModels = new Select()
                     .from(UserModel.class)
                     .where(UserModel_Table.username.eq(phone))
-                    .queryList();
-            if ( !userModels.isEmpty() ) {
+                    .querySingle();
+            if ( userModels != null ) {
                 showToast("该手机号已添加，请不要重复添加");
                 return;
             }

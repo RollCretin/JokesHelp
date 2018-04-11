@@ -117,11 +117,21 @@ public class JokeModel extends BaseModel {
     @Override
     public boolean equals(Object obj) {
         JokeModel jokeModel = ( JokeModel ) obj;
-        if ( jokeModel.getContent() != null && jokeModel.getContent().equals(getContent())
-                && jokeModel.getImageUrl() != null && jokeModel.getImageUrl().equals(getImageUrl()) ) {
-            return true;
+        if ( jokeModel.getType() == 1 ) {
+            //内容相同就行
+            if ( jokeModel.getContent() != null && jokeModel.getContent().equals(getContent()) ) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            if ( jokeModel.getContent() != null && jokeModel.getContent().equals(getContent())
+                    && jokeModel.getImageUrl() != null && jokeModel.getImageUrl().equals(getImageUrl()) ) {
+                return true;
+            } else {
+                return false;
+            }
         }
-        return false;
     }
 }
 

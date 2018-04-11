@@ -32,6 +32,8 @@
         </activity>
         <activity android:name=".ui.VerificationCodeActivity">
         </activity>
+        <activity android:name=".ui.AutoAddUserActicity">
+        </activity>
     </application>
 
 </manifest>

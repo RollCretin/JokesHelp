@@ -7,6 +7,7 @@ import com.cretin.www.jokeshelp.R;
 import com.cretin.www.jokeshelp.db.JokeModel;
 import com.cretin.www.jokeshelp.db.UserModel;
 import com.cretin.www.jokeshelp.model.event.NotifyUpdate;
+import com.cretin.www.jokeshelp.utils.MyAlertDialog;
 import com.orhanobut.hawk.Hawk;
 import com.raizlabs.android.dbflow.sql.language.SQLite;
 
@@ -43,9 +44,17 @@ public class SystemSettingActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 //清除本地段子数据
-                showToast("本地段子数据已清除");
-                clearAllJokes();
-                EventBus.getDefault().post(new NotifyUpdate());
+                MyAlertDialog myAlertDialog =
+                        new MyAlertDialog(SystemSettingActivity.this, "温馨提示", "是否要清除本地段子？");
+                myAlertDialog.setOnClickListener(new MyAlertDialog.OnPositiveClickListener() {
+                    @Override
+                    public void onPositiveClickListener(View v) {
+                        showToast("本地段子数据已清除");
+                        clearAllJokes();
+                        EventBus.getDefault().post(new NotifyUpdate());
+                    }
+                });
+                myAlertDialog.show();
             }
         });
 
@@ -53,19 +62,35 @@ public class SystemSettingActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 //清除本地用户数据
-                showToast("本地用户数据已清除");
-                clearAllUsers();
-                EventBus.getDefault().post(new NotifyUpdate());
+                MyAlertDialog myAlertDialog =
+                        new MyAlertDialog(SystemSettingActivity.this, "温馨提示", "是否要清除本地用户？");
+                myAlertDialog.setOnClickListener(new MyAlertDialog.OnPositiveClickListener() {
+                    @Override
+                    public void onPositiveClickListener(View v) {
+                        showToast("本地用户数据已清除");
+                        clearAllUsers();
+                        EventBus.getDefault().post(new NotifyUpdate());
+                    }
+                });
+                myAlertDialog.show();
             }
         });
 
         tv_03.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showToast("本地所有数据已清除");
-                //清除本地所有数据
-                clearAllData();
-                EventBus.getDefault().post(new NotifyUpdate());
+                MyAlertDialog myAlertDialog =
+                        new MyAlertDialog(SystemSettingActivity.this, "温馨提示", "是否要清除本地所有数据？");
+                myAlertDialog.setOnClickListener(new MyAlertDialog.OnPositiveClickListener() {
+                    @Override
+                    public void onPositiveClickListener(View v) {
+                        showToast("本地所有数据已清除");
+                        //清除本地所有数据
+                        clearAllData();
+                        EventBus.getDefault().post(new NotifyUpdate());
+                    }
+                });
+                myAlertDialog.show();
             }
         });
 
@@ -76,8 +101,10 @@ public class SystemSettingActivity extends BaseActivity {
                 Hawk.put("AUTO_LIKE", !flag);
                 if ( !flag ) {
                     tv_04.setText("关闭添加段子自动点赞");
+                    showToast("添加段子自动点赞已打开");
                 } else {
                     tv_04.setText("开启添加段子自动点赞");
+                    showToast("添加段子自动点赞已关闭");
                 }
             }
         });
