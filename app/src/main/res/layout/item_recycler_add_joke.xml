@@ -57,20 +57,20 @@
                     android:paddingBottom="2dp">
 
                     <TextView
-                        android:layout_weight="1"
                         android:id="@+id/tv_asign"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginRight="4dp"
+                        android:layout_weight="1"
                         android:text="不听我吹牛是你的损失"
                         android:textColor="#9b9b9b"
                         android:textSize="@dimen/text_size_10"/>
 
                     <TextView
-                        android:paddingRight="16dp"
                         android:id="@+id/tv_type"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:paddingRight="16dp"
                         android:text="图片路径错误"
                         android:textColor="#9b9b9b"
                         android:textSize="@dimen/text_size_10"/>
@@ -107,9 +107,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@color/white"
+                    android:ellipsize="end"
                     android:lineSpacingExtra="4dp"
                     android:maxLines="3"
-                    android:ellipsize="end"
                     android:textColor="#666666"
                     android:textSize="@dimen/text_size_14"/>
 
@@ -121,22 +121,29 @@
                     android:visibility="visible">
 
                     <View
-                        android:layout_marginBottom="10dp"
-                        android:layout_marginTop="10dp"
                         android:layout_width="match_parent"
                         android:layout_height="0.5dp"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginTop="10dp"
                         android:background="@color/line"/>
 
                     <TextView
-                        android:ellipsize="end"
                         android:id="@+id/richText1"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@color/white"
+                        android:ellipsize="end"
                         android:lineSpacingExtra="4dp"
                         android:maxLines="3"
                         android:textColor="#666666"
                         android:textSize="@dimen/text_size_14"/>
+
+                    <ImageView
+                        android:id="@+id/iv_pic"
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp"
+                        android:layout_marginTop="10dp"
+                        android:scaleType="centerCrop"/>
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>

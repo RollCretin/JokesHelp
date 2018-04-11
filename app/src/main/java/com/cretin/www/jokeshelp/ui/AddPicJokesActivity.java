@@ -27,6 +27,7 @@ import com.cretin.www.jokeshelp.db.UserModel_Table;
 import com.cretin.www.jokeshelp.model.BaseResultModel;
 import com.cretin.www.jokeshelp.model.JokeImgModel;
 import com.cretin.www.jokeshelp.model.event.NotifyUpdate;
+import com.cretin.www.jokeshelp.utils.MyAlertDialog;
 import com.cretin.www.jokeshelp.utils.UUIDUtils;
 import com.cretin.www.jokeshelp.view.ItemButtomDecoration;
 import com.google.gson.Gson;
@@ -111,9 +112,30 @@ public class AddPicJokesActivity extends BaseActivity implements View.OnClickLis
         adapter.openLoadAnimation(BaseQuickAdapter.ALPHAIN);
         adapter.setNotDoAnimationCount(2);
         adapter.bindToRecyclerView(recyclerview);
+        adapter.setOnItemLongClickListener(new BaseQuickAdapter.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(BaseQuickAdapter adapter, View view, int position) {
+                MyAlertDialog myAlertDialog = new MyAlertDialog(AddPicJokesActivity.this, "提示", "是否删除改条记录？");
+                myAlertDialog.setOnClickListener(new MyAlertDialog.OnPositiveClickListener() {
+                    @Override
+                    public void onPositiveClickListener(View v) {
+                        list.remove(position);
+                        listFlag.remove(position);
+                        listUseful.remove(position);
+                        adapter.notifyDataSetChanged();
+                    }
+                });
+                myAlertDialog.show();
+                return false;
+            }
+        });
         adapter.setEmptyView(R.layout.empty_view);
         recyclerview.setAdapter(adapter);
     }
+
+    //备用key
+    private String beiyongKey = "d01370b66822af9acb3798141f9b2186";
+    private String defaultKey = "fcc736b44a9f3ed587971eb62276ff0b";
 
     //获取数据
     private void getData() {
@@ -125,7 +147,7 @@ public class AddPicJokesActivity extends BaseActivity implements View.OnClickLis
         showDialog("正在加载...");
         String url = "http://v.juhe.cn/joke/randJoke.php";
         Map<String, String> params = new HashMap<>();
-        params.put("key", "fcc736b44a9f3ed587971eb62276ff0b");
+        params.put("key", defaultKey);
         params.put("type", "pic");
         params.put("page", page);
         params.put("pagesize", "20");
@@ -147,7 +169,13 @@ public class AddPicJokesActivity extends BaseActivity implements View.OnClickLis
                     @Override
                     public void onSuccess(int statusCode, JokeImgModel response) {
                         //本地校验数据
-                        analyseData(response);
+                        if ( response.getError_code() == 10012 ) {
+                            defaultKey = beiyongKey;
+                            showToast(response.getReason());
+                            stopDialog();
+                        } else {
+                            analyseData(response);
+                        }
                     }
                 });
     }
@@ -518,6 +546,11 @@ public class AddPicJokesActivity extends BaseActivity implements View.OnClickLis
                 }
             }.execute(item.getUserId());
 
+            Picasso.with(AddPicJokesActivity.this)
+                    .load(item.getImageUrl())
+                    .error(R.mipmap.jiazaishibai)
+                    .placeholder(R.mipmap.jiazaizhong)
+                    .into(( ImageView ) helper.getView(R.id.iv_pic));
 
             if ( listFlag.get(helper.getPosition()) ) {
                 //可用

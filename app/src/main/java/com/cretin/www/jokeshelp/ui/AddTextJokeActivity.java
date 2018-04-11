@@ -26,6 +26,7 @@ import com.cretin.www.jokeshelp.db.UserModel_Table;
 import com.cretin.www.jokeshelp.model.BaseResultModel;
 import com.cretin.www.jokeshelp.model.JokeTextModel;
 import com.cretin.www.jokeshelp.model.event.NotifyUpdate;
+import com.cretin.www.jokeshelp.utils.MyAlertDialog;
 import com.cretin.www.jokeshelp.utils.UUIDUtils;
 import com.cretin.www.jokeshelp.view.ItemButtomDecoration;
 import com.google.gson.Gson;
@@ -104,6 +105,22 @@ public class AddTextJokeActivity extends BaseActivity implements View.OnClickLis
         adapter.openLoadAnimation(BaseQuickAdapter.ALPHAIN);
         adapter.setNotDoAnimationCount(2);
         adapter.bindToRecyclerView(recyclerview);
+        adapter.setOnItemLongClickListener(new BaseQuickAdapter.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(BaseQuickAdapter adapter, View view, int position) {
+                MyAlertDialog myAlertDialog = new MyAlertDialog(AddTextJokeActivity.this, "提示", "是否删除改条记录？");
+                myAlertDialog.setOnClickListener(new MyAlertDialog.OnPositiveClickListener() {
+                    @Override
+                    public void onPositiveClickListener(View v) {
+                        list.remove(position);
+                        listFlag.remove(position);
+                        adapter.notifyDataSetChanged();
+                    }
+                });
+                myAlertDialog.show();
+                return false;
+            }
+        });
         adapter.setEmptyView(R.layout.empty_view);
         recyclerview.setAdapter(adapter);
     }
@@ -455,6 +472,7 @@ public class AddTextJokeActivity extends BaseActivity implements View.OnClickLis
                 }
             }.execute(item.getUserId());
 
+            helper.setVisible(R.id.tv_type, false);
 
             if ( listFlag.get(helper.getPosition()) ) {
                 //可用
